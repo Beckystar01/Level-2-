@@ -625,7 +625,8 @@
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-title">🛡️ CyberSecure</div>
-      <button onclick="exportAnswers()" style="margin-top: 12px; width: 100%; background: rgba(0,217,255,0.15); border: 1px solid #00D9FF; color: #00D9FF; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">⬇️ Export My Answers</button>
+      <button id="export-btn" onclick="exportAnswers()" disabled style="margin-top: 12px; width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #7A8FA6; padding: 8px 10px; border-radius: 6px; cursor: not-allowed; font-size: 12px; font-weight: 600;">⬇️ Export My Answers</button>
+      <div id="export-progress" style="font-size: 11px; color: #7A8FA6; margin-top: 6px; text-align: center;">Loading progress...</div>
     </div>
 
     <div class="sidebar-nav">
@@ -3605,9 +3606,57 @@
         const key = STORAGE_PREFIX + el.id;
         const saved = localStorage.getItem(key);
         if (saved !== null) el.value = saved;
-        el.addEventListener('input', () => localStorage.setItem(key, el.value));
+        el.addEventListener('input', () => { localStorage.setItem(key, el.value); updateExportGate(); });
       });
     })();
+
+    // === COMPLETION GATE: only unlock Export once every worksheet question and
+    // every practice-exam MCQ has an answer ===
+    function getCompletionStatus() {
+      let total = 0, answered = 0;
+      document.querySelectorAll('.question, .task-card').forEach(block => {
+        const label = block.querySelector('.question-text, .task-label');
+        const inputs = block.querySelectorAll('textarea, input[type="text"]');
+        if (!label || inputs.length === 0) return;
+        inputs.forEach(inp => {
+          total++;
+          if (inp.value.trim()) answered++;
+        });
+      });
+      document.querySelectorAll('[id^="u4q"], [id^="u5q"], [id^="u6q"]').forEach(group => {
+        if (!group.querySelector('button')) return;
+        total++;
+        if (group.querySelector('button[disabled]')) answered++;
+      });
+      return { total, answered, complete: total > 0 && answered === total };
+    }
+
+    function updateExportGate() {
+      const btn = document.getElementById('export-btn');
+      const progress = document.getElementById('export-progress');
+      if (!btn || !progress) return;
+      const { total, answered, complete } = getCompletionStatus();
+      progress.textContent = complete
+        ? '✅ All done - ready to export!'
+        : `📝 ${answered}/${total} answered - finish everything to unlock export`;
+      btn.disabled = !complete;
+      btn.style.cursor = complete ? 'pointer' : 'not-allowed';
+      btn.style.background = complete ? 'rgba(0,217,255,0.15)' : 'rgba(255,255,255,0.05)';
+      btn.style.borderColor = complete ? '#00D9FF' : 'rgba(255,255,255,0.15)';
+      btn.style.color = complete ? '#00D9FF' : '#7A8FA6';
+    }
+
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('button[onclick]');
+      if (!btn) return;
+      const oc = btn.getAttribute('onclick') || '';
+      if (/checkMCQ\(this,\s*(true|false),\s*'u[456]q\d+'\)/.test(oc)) {
+        setTimeout(updateExportGate, 0);
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', updateExportGate);
+    updateExportGate();
 
     // === MOBILE NAV: hamburger toggle for the sidebar on small screens ===
     function toggleSidebar() {
@@ -3616,6 +3665,11 @@
 
     // === EXPORT: download every written answer as a text file for handing in ===
     function exportAnswers() {
+      const status = getCompletionStatus();
+      if (!status.complete) {
+        alert(`Not finished yet - ${status.answered}/${status.total} questions answered. Complete everything to unlock export.`);
+        return;
+      }
       const lines = ['NCFE Level 2 Cyber Security - My Answers', 'Exported: ' + new Date().toLocaleString(), '='.repeat(50), ''];
       let unitTitle = '';
       document.querySelectorAll('.page-section').forEach(section => {
