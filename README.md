@@ -8,19 +8,45 @@ activity type.
 
 ## Files
 
-- `cyber_security_with_all_worksheets.html` — the entire platform (content,
-  styling, and JavaScript) in one file. This is the only file that needs to
-  be opened/deployed.
+- `cyber_security_with_all_worksheets.html` — the platform itself (content,
+  styling, and JavaScript). This is the file students open.
+- `firebase-config.js` — your Firebase project's connection keys. Ships
+  with placeholders — see **Login accounts + admin dashboard** below.
+- `FIREBASE_SETUP.md` — the one-time setup steps for login accounts.
 - `ANSWER_KEY.md` — the answer key for the auto-graded multiple-choice
   questions in Units 4, 5 and 6's practice/mock exams, with confidence
   notes for a tutor to double-check before relying on it for assessment.
 - `.github/workflows/pages.yml` — GitHub Actions workflow that deploys the
   site to GitHub Pages on every push to `main`.
 
+## Login accounts + admin dashboard
+
+Students log in with a first name and a password they choose. Every
+worksheet answer and every practice-exam MCQ result is saved to their
+account. A separate **Admin Dashboard** page (visible only to accounts you
+designate as admin) lists every student and their answers/scores.
+
+This requires a one-time Firebase project setup — see
+**[FIREBASE_SETUP.md](./FIREBASE_SETUP.md)** for the full walkthrough
+(about 10 minutes, free). Until that's done, the login screen will offer
+a "Continue without login (offline mode)" fallback so the site is never
+completely unusable — but in that mode, answers only save to the local
+device and nothing appears in the admin dashboard.
+
 ## Running it locally
 
-No build step, no dependencies. Just open
-`cyber_security_with_all_worksheets.html` directly in a browser.
+No build step. Because the login system uses ES modules
+(`<script type="module">`), opening the HTML file directly via `file://`
+won't load them (browsers block module imports from `file://` for security
+reasons) — you'll see the offline-mode fallback instead, which is fine for
+checking content but not the login/admin flow. To test login locally, serve
+the folder over HTTP, e.g.:
+
+```
+python3 -m http.server 8000
+```
+
+then open `http://localhost:8000/cyber_security_with_all_worksheets.html`.
 
 ## Hosting on GitHub Pages
 
@@ -63,8 +89,16 @@ between devices.
   general cybersecurity/NCFE-curriculum knowledge, not an official mark
   scheme — a tutor should verify it before students rely on it for exam
   prep.
-- There's no server-side component, so there's no way for a tutor to see
-  what a student typed unless the student uses the export button and sends
-  the file on.
+- Usernames are first names only, which can collide between students —
+  the second student with a given first name needs to add a distinguishing
+  suffix (e.g. a last initial) when creating their account.
+- The admin dashboard shows accumulated MCQ scores per unit and every
+  saved written answer, but there's no per-question override/re-grade UI —
+  correcting a wrong auto-graded answer means editing the answer key in
+  the HTML itself (see `ANSWER_KEY.md`).
 - Verified in a headless Chromium browser at desktop and a 400px mobile
-  viewport; not yet tested on a physical phone.
+  viewport; not yet tested on a physical phone. The login flow specifically
+  could only be verified up to the point of reaching Firebase, since this
+  development sandbox has no outbound internet access — a real device with
+  a configured Firebase project should be used to confirm the full
+  sign-up/login/admin round trip before relying on it with students.
