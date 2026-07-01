@@ -620,44 +620,12 @@
 </head>
 <body>
 
-  <!-- AUTH GATE: covers the whole app until a student/admin logs in -->
-  <div id="auth-gate" style="position: fixed; inset: 0; z-index: 500; background: linear-gradient(135deg, #0F172A 0%, #1a3a5a 100%); display: flex; align-items: center; justify-content: center; padding: 20px;">
-    <div style="max-width: 380px; width: 100%; background: rgba(10,14,39,0.9); border: 1px solid rgba(0,217,255,0.3); border-radius: 16px; padding: 32px;">
-      <div style="text-align: center; margin-bottom: 20px;">
-        <div style="font-size: 32px;">🛡️</div>
-        <h1 style="color: #00D9FF; font-size: 20px; margin-top: 8px;">CyberSecure Login</h1>
-        <p style="color: #a0aec0; font-size: 13px; margin-top: 6px;">NCFE Level 2 Cyber Security</p>
-      </div>
-
-      <div id="auth-loading" style="text-align: center; color: #a0aec0; padding: 20px 0;">Connecting...</div>
-      <div id="auth-offline-option" style="display: none; text-align: center; margin-top: 14px;">
-        <button onclick="document.getElementById('auth-gate').style.display='none'" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 13px;">Continue without login (offline mode - answers save to this device only)</button>
-      </div>
-
-      <form id="auth-form" style="display: none;" onsubmit="return false;">
-        <label style="font-size: 12px; color: #a0aec0; display: block; margin-bottom: 4px;">First name (this is your username)</label>
-        <input id="auth-firstname" type="text" placeholder="e.g. Jordan" class="answer-input" style="margin-bottom: 14px;" autocomplete="username">
-
-        <label style="font-size: 12px; color: #a0aec0; display: block; margin-bottom: 4px;">Password</label>
-        <input id="auth-password" type="password" placeholder="Password" class="answer-input" style="margin-bottom: 16px;" autocomplete="current-password">
-
-        <button onclick="doLogin()" class="btn-submit" style="width: 100%; margin-bottom: 10px;">Log In</button>
-        <button onclick="doSignup()" style="width: 100%; background: rgba(57,255,20,0.15); border: 1px solid #39FF14; color: #39FF14; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: 600;">Create Account (first time here)</button>
-
-        <div id="auth-error" style="color: #FF6444; font-size: 13px; margin-top: 12px; display: none;"></div>
-        <p style="color: #7A8FA6; font-size: 11px; margin-top: 16px; text-align: center;">Two students with the same first name? Add a last initial, e.g. "Jordan B", so accounts don't collide.</p>
-      </form>
-    </div>
-  </div>
-
   <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
   <div style="background: #0F172A; color: #ffffff; min-height: 100vh; display: flex; margin: 0; padding: 0;">
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-title">🛡️ CyberSecure</div>
-      <div id="auth-status" style="font-size: 11px; color: #7A8FA6; margin-top: 8px;"></div>
       <button onclick="exportAnswers()" style="margin-top: 12px; width: 100%; background: rgba(0,217,255,0.15); border: 1px solid #00D9FF; color: #00D9FF; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">⬇️ Export My Answers</button>
-      <button onclick="doLogout()" style="margin-top: 8px; width: 100%; background: rgba(255,100,68,0.1); border: 1px solid #FF6444; color: #FF6444; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">🚪 Log Out</button>
     </div>
 
     <div class="sidebar-nav">
@@ -665,7 +633,7 @@
         <div class="nav-section-title">Navigation</div>
         <button class="nav-btn active" onclick="goPage('home')">🏠 Home</button>
       </div>
-      
+
       <div class="nav-section">
         <div class="nav-section-title">Units (6)</div>
         <button class="nav-btn" onclick="goPage('unit1')">📚 Unit 1</button>
@@ -674,11 +642,6 @@
         <button class="nav-btn" onclick="goPage('unit4')">📚 Unit 4</button>
         <button class="nav-btn" onclick="goPage('unit5')">📚 Unit 5</button>
         <button class="nav-btn" onclick="goPage('unit6')">📚 Unit 6</button>
-      </div>
-
-      <div class="nav-section" id="admin-nav-section" style="display: none;">
-        <div class="nav-section-title">Staff</div>
-        <button class="nav-btn" onclick="goPage('admin')">🎓 Admin Dashboard</button>
       </div>
     </div>
   </div>
@@ -2801,25 +2764,6 @@
           </div>
         </div>
       </div>
-
-      <!-- ADMIN DASHBOARD -->
-      <div class="page-section" id="admin">
-        <div class="unit-header">
-          <div class="unit-header-content">
-            <div class="unit-title">🎓 Admin Dashboard</div>
-          </div>
-        </div>
-        <div class="unit-content">
-          <div class="learning-card">
-            <div class="card-title">👥 Students</div>
-            <div class="card-content">
-              <button class="btn-submit" onclick="loadAdminDashboard()" style="margin-bottom: 16px;">🔄 Refresh</button>
-              <div id="admin-loading" style="color: #a0aec0;">Click Refresh to load student data.</div>
-              <div id="admin-student-list"></div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -2832,7 +2776,7 @@
       const btns = document.querySelectorAll('.nav-btn');
       btns.forEach(b => b.classList.remove('active'));
       
-      const map = {'home': 0, 'unit1': 1, 'unit2': 2, 'unit3': 3, 'unit4': 4, 'unit5': 5, 'unit6': 6, 'admin': 7};
+      const map = {'home': 0, 'unit1': 1, 'unit2': 2, 'unit3': 3, 'unit4': 4, 'unit5': 5, 'unit6': 6};
       if (map[pageId] !== undefined) {
         btns[map[pageId]].classList.add('active');
       }
@@ -3709,273 +3653,6 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    }
-  </script>
-
-  <script type="module">
-    let app, auth, db, currentUid = null;
-    let createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut;
-    let doc, setDoc, updateDoc, getDoc, getDocs, collection, serverTimestamp;
-    let LOGIN_EMAIL_DOMAIN = 'ncfe-cyber-students.local';
-    const saveTimers = {};
-
-    function showAuthError(msg) {
-      const el = document.getElementById('auth-error');
-      el.textContent = msg;
-      el.style.display = 'block';
-    }
-
-    function offerOfflineFallback(message) {
-      document.getElementById('auth-loading').innerHTML = message;
-      document.getElementById('auth-offline-option').style.display = 'block';
-    }
-
-    function timeout(ms) {
-      return new Promise((_, reject) => setTimeout(() => reject(new Error('timed out')), ms));
-    }
-
-    (async () => {
-      try {
-        const configModule = await Promise.race([import('./firebase-config.js'), timeout(8000)]);
-        const firebaseConfig = configModule.firebaseConfig;
-        LOGIN_EMAIL_DOMAIN = configModule.LOGIN_EMAIL_DOMAIN || LOGIN_EMAIL_DOMAIN;
-
-        if (!firebaseConfig || firebaseConfig.apiKey.startsWith('PASTE_')) {
-          offerOfflineFallback(
-            '<span style="color:#FFC864;">⚠️ Firebase isn\'t configured yet.</span><br><br>' +
-            'See <strong>FIREBASE_SETUP.md</strong> in the repo for the one-time setup steps, then fill in <code>firebase-config.js</code>.'
-          );
-          return;
-        }
-
-        const [appMod, authMod, fsMod] = await Promise.race([
-          Promise.all([
-            import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js"),
-            import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js"),
-            import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js")
-          ]),
-          timeout(8000)
-        ]);
-
-        ({ createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } = authMod);
-        ({ doc, setDoc, updateDoc, getDoc, getDocs, collection, serverTimestamp } = fsMod);
-
-        app = appMod.initializeApp(firebaseConfig);
-        auth = authMod.getAuth(app);
-        db = fsMod.getFirestore(app);
-
-        document.getElementById('auth-loading').style.display = 'none';
-        document.getElementById('auth-form').style.display = 'block';
-        setupAuthObserver();
-      } catch (e) {
-        offerOfflineFallback(
-          '<span style="color:#FF6444;">⚠️ Could not reach the login server (no internet, or it\'s blocked on this network).</span>'
-        );
-      }
-    })();
-
-    function firstNameToEmail(firstName) {
-      const clean = firstName.trim().toLowerCase().replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '');
-      return clean + '@' + LOGIN_EMAIL_DOMAIN;
-    }
-
-    window.doSignup = async function() {
-      const firstName = document.getElementById('auth-firstname').value.trim();
-      const password = document.getElementById('auth-password').value;
-      document.getElementById('auth-error').style.display = 'none';
-      if (!firstName || password.length < 6) {
-        showAuthError('Enter your first name and a password of at least 6 characters.');
-        return;
-      }
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, firstNameToEmail(firstName), password);
-        await setDoc(doc(db, 'students', cred.user.uid), {
-          firstName, createdAt: serverTimestamp(), answers: {}, mcq: {}
-        });
-      } catch (e) {
-        if (e.code === 'auth/email-already-in-use') {
-          showAuthError('That first name is already taken - try adding your last initial, e.g. "Jordan B".');
-        } else {
-          showAuthError(e.message);
-        }
-      }
-    };
-
-    window.doLogin = async function() {
-      const firstName = document.getElementById('auth-firstname').value.trim();
-      const password = document.getElementById('auth-password').value;
-      document.getElementById('auth-error').style.display = 'none';
-      if (!firstName || !password) { showAuthError('Enter your first name and password.'); return; }
-      try {
-        await signInWithEmailAndPassword(auth, firstNameToEmail(firstName), password);
-      } catch (e) {
-        showAuthError('Login failed - check your first name and password, or Create Account if this is your first visit.');
-      }
-    };
-
-    window.doLogout = async function() {
-      await signOut(auth);
-    };
-
-    // Build a map of field id -> its question/task label, from the (blank) template
-    // already in the DOM. Used both for this user's own answers and for the admin view.
-    function buildFieldMap() {
-      const map = {};
-      document.querySelectorAll('.question, .task-card').forEach(block => {
-        const label = block.querySelector('.question-text, .task-label');
-        if (!label) return;
-        block.querySelectorAll('textarea, input[type="text"]').forEach(el => {
-          if (el.id) map[el.id] = label.textContent.trim();
-        });
-      });
-      return map;
-    }
-
-    // Build groupId -> correct answer letter/text for every checkMCQ practice-exam question.
-    function buildMcqAnswerKey() {
-      const key = {};
-      document.querySelectorAll('[id^="u4q"], [id^="u5q"], [id^="u6q"]').forEach(group => {
-        const correctBtn = group.querySelector('button[onclick*=",true,"]');
-        if (correctBtn) key[group.id] = correctBtn.textContent.trim();
-      });
-      return key;
-    }
-
-    function debouncedSaveField(id, value) {
-      clearTimeout(saveTimers[id]);
-      saveTimers[id] = setTimeout(async () => {
-        if (!currentUid) return;
-        try {
-          await updateDoc(doc(db, 'students', currentUid), { ['answers.' + id]: value, lastSaved: serverTimestamp() });
-        } catch (e) { /* offline - localStorage backup already has it */ }
-      }, 800);
-    }
-
-    async function saveMcqResult(groupId, selectedText, correct) {
-      if (!currentUid) return;
-      try {
-        await updateDoc(doc(db, 'students', currentUid), {
-          ['mcq.' + groupId]: { selected: selectedText, correct }, lastSaved: serverTimestamp()
-        });
-      } catch (e) { /* offline */ }
-    }
-
-    async function loadMyAnswers(uid) {
-      const snap = await getDoc(doc(db, 'students', uid));
-      if (!snap.exists()) return;
-      const data = snap.data();
-      const answers = data.answers || {};
-      Object.keys(answers).forEach(id => {
-        const el = document.getElementById(id);
-        if (el && !el.value) el.value = answers[id];
-      });
-    }
-
-    // Track every text field (ids were already assigned by the localStorage persistence block above)
-    document.querySelectorAll('.answer-input, .task-card input[type="text"]').forEach(el => {
-      el.addEventListener('input', () => { if (el.id) debouncedSaveField(el.id, el.value); });
-    });
-
-    // Track practice-exam MCQ answers for grading, reusing the same (this,true/false,'groupId') pattern
-    document.addEventListener('click', function(e) {
-      const btn = e.target.closest('button[onclick]');
-      if (!btn) return;
-      const oc = btn.getAttribute('onclick') || '';
-      const m = oc.match(/checkMCQ\(this,\s*(true|false),\s*'(u[456]q\d+)'\)/);
-      if (!m) return;
-      saveMcqResult(m[2], btn.textContent.replace(/^[✓✗]\s*/, '').trim(), m[1] === 'true');
-    });
-
-    window.loadAdminDashboard = async function() {
-      const listEl = document.getElementById('admin-student-list');
-      const loadingEl = document.getElementById('admin-loading');
-      loadingEl.textContent = 'Loading...';
-      listEl.innerHTML = '';
-      try {
-        const fieldMap = buildFieldMap();
-        const answerKey = buildMcqAnswerKey();
-        const snap = await getDocs(collection(db, 'students'));
-        if (snap.empty) { loadingEl.textContent = 'No students yet.'; return; }
-        loadingEl.textContent = '';
-
-        snap.forEach(docSnap => {
-          const data = docSnap.data();
-          const mcq = data.mcq || {};
-          const answers = data.answers || {};
-
-          const scoreByUnit = { u4: [0, 0], u5: [0, 0], u6: [0, 0] };
-          Object.keys(mcq).forEach(gid => {
-            const unit = gid.slice(0, 2);
-            if (scoreByUnit[unit]) {
-              scoreByUnit[unit][1]++;
-              if (mcq[gid].correct) scoreByUnit[unit][0]++;
-            }
-          });
-
-          const card = document.createElement('div');
-          card.style.cssText = 'background: rgba(0,217,255,0.06); border: 1px solid rgba(0,217,255,0.2); border-radius: 10px; padding: 16px; margin-bottom: 14px;';
-
-          const scoresHtml = Object.entries(scoreByUnit).map(([u, [c, t]]) =>
-            t > 0 ? `<span style="margin-right:14px;">${u.toUpperCase()} Practice: <strong style="color:${c===t?'#39FF14':'#FFC864'}">${c}/${t}</strong></span>` : ''
-          ).join('');
-
-          const answersId = 'admin-answers-' + docSnap.id;
-          const mcqId = 'admin-mcq-' + docSnap.id;
-          card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-              <strong style="color:#00D9FF; font-size:16px;">👤 ${data.firstName || '(unknown)'}</strong>
-              <div style="font-size:13px;">${scoresHtml || '<span style="color:#7A8FA6;">No practice exam attempts yet</span>'}</div>
-            </div>
-            <div style="margin-top:10px;">
-              <button onclick="document.getElementById('${answersId}').style.display = document.getElementById('${answersId}').style.display==='block'?'none':'block'" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px; margin-right:8px;">📄 Toggle Written Answers (${Object.keys(answers).length})</button>
-              <button onclick="document.getElementById('${mcqId}').style.display = document.getElementById('${mcqId}').style.display==='block'?'none':'block'" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:12px;">✅ Toggle MCQ Detail (${Object.keys(mcq).length})</button>
-            </div>
-            <div id="${answersId}" style="display:none; margin-top:10px; max-height:300px; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:6px; padding:10px;"></div>
-            <div id="${mcqId}" style="display:none; margin-top:10px; max-height:300px; overflow-y:auto; background:rgba(0,0,0,0.2); border-radius:6px; padding:10px;"></div>
-          `;
-          listEl.appendChild(card);
-
-          const answersDiv = card.querySelector('#' + answersId);
-          Object.keys(answers).forEach(id => {
-            if (!answers[id]) return;
-            const label = fieldMap[id] || id;
-            const row = document.createElement('div');
-            row.style.cssText = 'margin-bottom:10px; font-size:13px;';
-            row.innerHTML = `<div style="color:#FFC864;">Q: ${label}</div><div style="color:#e0e0e0; margin-top:2px;">A: ${answers[id]}</div>`;
-            answersDiv.appendChild(row);
-          });
-
-          const mcqDiv = card.querySelector('#' + mcqId);
-          Object.keys(mcq).forEach(gid => {
-            const row = document.createElement('div');
-            const correct = mcq[gid].correct;
-            row.style.cssText = 'margin-bottom:6px; font-size:13px; color:' + (correct ? '#39FF14' : '#FF6444') + ';';
-            row.textContent = (correct ? '✓ ' : '✗ ') + gid + ': "' + mcq[gid].selected + '"' +
-              (correct ? '' : ' (correct answer: "' + (answerKey[gid] || '?') + '")');
-            mcqDiv.appendChild(row);
-          });
-        });
-      } catch (e) {
-        loadingEl.textContent = 'Failed to load: ' + e.message + ' (make sure your account is added to the "admins" collection - see FIREBASE_SETUP.md)';
-      }
-    };
-
-    function setupAuthObserver() {
-      onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          currentUid = user.uid;
-          document.getElementById('auth-gate').style.display = 'none';
-          document.getElementById('auth-status').textContent = '👤 Logged in';
-          await loadMyAnswers(user.uid);
-          try {
-            const adminSnap = await getDoc(doc(db, 'admins', user.uid));
-            if (adminSnap.exists()) document.getElementById('admin-nav-section').style.display = 'block';
-          } catch (e) { /* not an admin, or rules block the read - fine */ }
-        } else {
-          currentUid = null;
-          document.getElementById('auth-gate').style.display = 'flex';
-        }
-      });
     }
   </script>
 </div>
