@@ -111,6 +111,38 @@
       .hero-layout { grid-template-columns: 1fr; }
       .hacker-illustration { display: none !important; }
     }
+
+    .sidebar-toggle { display: none; }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 100;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+      }
+      .sidebar.sidebar-open { transform: translateX(0); }
+      .sidebar-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        z-index: 101;
+        width: 44px;
+        height: 44px;
+        background: #00D9FF;
+        color: #0A0E27;
+        border: none;
+        border-radius: 8px;
+        font-size: 20px;
+        cursor: pointer;
+      }
+      .main-content { width: 100%; }
+    }
     
     .hero-content { text-align: left; }
     .level-badge {
@@ -587,6 +619,7 @@
   </style>
 </head>
 <body>
+  <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">☰</button>
   <div style="background: #0F172A; color: #ffffff; min-height: 100vh; display: flex; margin: 0; padding: 0;">
   <div class="sidebar">
     <div class="sidebar-header">
@@ -984,6 +1017,10 @@
               <div class="card-content">
                 <p style="margin-bottom: 12px;">Based on the clues, deduce Steve's password:</p>
                 <input type="text" id="pwd" placeholder="Password..." class="answer-input" style="margin-bottom: 12px;">
+                <button class="btn-submit" style="background: rgba(0,217,255,0.15); border: 1px solid #00D9FF;" onclick="document.getElementById('pwd-reveal').style.display='block'">💡 Show a suggested answer</button>
+                <div id="pwd-reveal" style="display:none; margin-top: 10px; padding: 10px; background: rgba(255,200,100,0.1); border-radius: 6px; border: 1px solid rgba(255,200,100,0.3);">
+                  <p style="color: #FFC864; font-size: 13px;"><strong>Suggested answer: SDay123!</strong> (capital S, surname "Day", a number, a special character, 8 characters total) — this is one valid deduction from the clues. Check with your tutor for the exact answer they're expecting.</p>
+                </div>
               </div>
             </div>
             
@@ -1243,6 +1280,7 @@
           </div>
           
           <div class="tab-content" id="u2data">
+            <p style="color: #00D9FF; font-weight: 700; font-size: 13px; letter-spacing: 0.5px; margin-bottom: 8px;">🎯 ACTIVITY 1 OF 2</p>
             <!-- ACTIVITY: PEEL THE WEB LAYERS -->
             <div class="learning-card">
               <div class="card-title">🧅 PEEL THE LAYERS: Explore the Web!</div>
@@ -1268,6 +1306,7 @@
               </div>
             </div>
             
+            <p style="color: #00D9FF; font-weight: 700; font-size: 13px; letter-spacing: 0.5px; margin-bottom: 8px; margin-top: 8px;">🎯 ACTIVITY 2 OF 2</p>
             <!-- ACTIVITY 2: CIA COMBINATION LOCK -->
             <div class="learning-card">
               <div class="card-title">🔢 CIA COMBINATION LOCK: Match the Method!</div>
@@ -2265,41 +2304,40 @@
                 <div style="background: rgba(0, 217, 255, 0.1); padding: 14px; border-radius: 8px; margin-top: 12px;">
                   <p style="margin-bottom: 10px;"><strong>1. Hardware firewalls protect entire networks at the entry point</strong></p>
                   <div style="display: flex; gap: 10px;" id="ff1">
-                    <button onclick="factFiction(this, 'fact', 'ff1')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
-                    <button onclick="factFiction(this, 'fiction', 'ff1')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
+                    <button onclick="factFiction(this, true, 'ff1')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
+                    <button onclick="factFiction(this, false, 'ff1')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
                   </div>
-                  <div data-answer="fact" style="display: none;"></div>
                 </div>
                 
                 <div style="background: rgba(0, 217, 255, 0.1); padding: 14px; border-radius: 8px; margin-top: 12px;">
                   <p style="margin-bottom: 10px;"><strong>2. Human firewalls require no training</strong></p>
                   <div style="display: flex; gap: 10px;" id="ff2">
-                    <button onclick="factFiction(this, 'fiction', 'ff2')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
-                    <button onclick="factFiction(this, 'fact', 'ff2')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
+                    <button onclick="factFiction(this, false, 'ff2')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
+                    <button onclick="factFiction(this, true, 'ff2')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
                   </div>
                 </div>
                 
                 <div style="background: rgba(0, 217, 255, 0.1); padding: 14px; border-radius: 8px; margin-top: 12px;">
                   <p style="margin-bottom: 10px;"><strong>3. Software firewalls run on individual computers</strong></p>
                   <div style="display: flex; gap: 10px;" id="ff3">
-                    <button onclick="factFiction(this, 'fact', 'ff3')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
-                    <button onclick="factFiction(this, 'fiction', 'ff3')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
+                    <button onclick="factFiction(this, true, 'ff3')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
+                    <button onclick="factFiction(this, false, 'ff3')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
                   </div>
                 </div>
                 
                 <div style="background: rgba(0, 217, 255, 0.1); padding: 14px; border-radius: 8px; margin-top: 12px;">
                   <p style="margin-bottom: 10px;"><strong>4. You only need ONE firewall to be fully secure</strong></p>
                   <div style="display: flex; gap: 10px;" id="ff4">
-                    <button onclick="factFiction(this, 'fiction', 'ff4')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
-                    <button onclick="factFiction(this, 'fact', 'ff4')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
+                    <button onclick="factFiction(this, false, 'ff4')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
+                    <button onclick="factFiction(this, true, 'ff4')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
                   </div>
                 </div>
                 
                 <div style="background: rgba(0, 217, 255, 0.1); padding: 14px; border-radius: 8px; margin-top: 12px;">
                   <p style="margin-bottom: 10px;"><strong>5. Firewalls use rules to allow or block network traffic</strong></p>
                   <div style="display: flex; gap: 10px;" id="ff5">
-                    <button onclick="factFiction(this, 'fact', 'ff5')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
-                    <button onclick="factFiction(this, 'fiction', 'ff5')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
+                    <button onclick="factFiction(this, true, 'ff5')" style="flex: 1; background: linear-gradient(135deg, #39FF14, #00CC44); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✓ FACT</button>
+                    <button onclick="factFiction(this, false, 'ff5')" style="flex: 1; background: linear-gradient(135deg, #FF6444, #CC0000); color: white; border: none; padding: 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 15px;">✗ FICTION</button>
                   </div>
                 </div>
               </div>
@@ -2742,8 +2780,9 @@
       }
       
       window.scrollTo(0, 0);
+      document.querySelector('.sidebar').classList.remove('sidebar-open');
     }
-    
+
     function switchTab(tabId) {
       const tabs = document.querySelectorAll('#unit1 .tab-content');
       tabs.forEach(t => t.classList.remove('active'));
@@ -3251,92 +3290,6 @@
       if (map[tabId] !== undefined) btns[map[tabId]].classList.add('active');
     }
     
-    // Generic feedback for all matching dropdowns (used by units 2-5)
-    function checkU4Mal(id, correct) {
-      const select = document.getElementById(id);
-      const val = select.value;
-      let fb = document.getElementById(id + '_fb');
-      if (!fb) {
-        fb = document.createElement('div');
-        fb.id = id + '_fb';
-        fb.style.marginTop = '8px';
-        select.parentNode.appendChild(fb);
-      }
-      if (val === '') { fb.innerHTML = ''; select.style.borderColor = '#00D9FF'; }
-      else if (val === correct) {
-        fb.innerHTML = '<div style="color: #39FF14; font-weight: 600; padding: 8px; background: rgba(57,255,20,0.1); border-radius: 4px;">✓ Correct! Well done.</div>';
-        select.style.borderColor = '#39FF14';
-      } else {
-        fb.innerHTML = '<div style="color: #FF6444; font-weight: 600; padding: 8px; background: rgba(255,100,68,0.1); border-radius: 4px;">✗ Incorrect. Try again!</div>';
-        select.style.borderColor = '#FF6444';
-      }
-    }
-    
-    function checkU4Phys(id, correct) { checkU4Mal(id, correct); }
-    function checkU4IoT(id, correct) { checkU4Mal(id, correct); }
-    function checkU4Conn(id, correct) { checkU4Mal(id, correct); }
-    function checkU5(id, correct) { checkU4Mal(id, correct); }
-    function checkU6(id, correct) { checkU4Mal(id, correct); }
-    
-    // Unit 2 specific functions
-    function checkMatch1() {
-      const val = document.getElementById('match1').value;
-      const fb = document.getElementById('feedback1');
-      if (val === 'wire') {
-        fb.innerHTML = '<div style="color: #39FF14; font-weight: 600; padding: 8px; background: rgba(57,255,20,0.1); border-radius: 4px;">✓ Correct! Well done.</div>';
-        document.getElementById('match1').style.borderColor = '#39FF14';
-      } else if (val === '') {
-        fb.innerHTML = '';
-        document.getElementById('match1').style.borderColor = '#00D9FF';
-      } else {
-        fb.innerHTML = '<div style="color: #FF6444; font-weight: 600; padding: 8px; background: rgba(255,100,68,0.1); border-radius: 4px;">✗ Try again!</div>';
-        document.getElementById('match1').style.borderColor = '#FF6444';
-      }
-      updateScore();
-    }
-    
-    function checkMatch2() {
-      const val = document.getElementById('match2').value;
-      const fb = document.getElementById('feedback2');
-      if (val === 'port') {
-        fb.innerHTML = '<div style="color: #39FF14; font-weight: 600; padding: 8px; background: rgba(57,255,20,0.1); border-radius: 4px;">✓ Correct! Well done.</div>';
-        document.getElementById('match2').style.borderColor = '#39FF14';
-      } else if (val === '') {
-        fb.innerHTML = '';
-        document.getElementById('match2').style.borderColor = '#00D9FF';
-      } else {
-        fb.innerHTML = '<div style="color: #FF6444; font-weight: 600; padding: 8px; background: rgba(255,100,68,0.1); border-radius: 4px;">✗ Try again!</div>';
-        document.getElementById('match2').style.borderColor = '#FF6444';
-      }
-      updateScore();
-    }
-    
-    function checkMatch3() {
-      const val = document.getElementById('match3').value;
-      const fb = document.getElementById('feedback3');
-      if (val === 'zombie') {
-        fb.innerHTML = '<div style="color: #39FF14; font-weight: 600; padding: 8px; background: rgba(57,255,20,0.1); border-radius: 4px;">✓ Correct! Well done.</div>';
-        document.getElementById('match3').style.borderColor = '#39FF14';
-      } else if (val === '') {
-        fb.innerHTML = '';
-        document.getElementById('match3').style.borderColor = '#00D9FF';
-      } else {
-        fb.innerHTML = '<div style="color: #FF6444; font-weight: 600; padding: 8px; background: rgba(255,100,68,0.1); border-radius: 4px;">✗ Try again!</div>';
-        document.getElementById('match3').style.borderColor = '#FF6444';
-      }
-      updateScore();
-    }
-    
-    function updateScore() {
-      let correct = 0;
-      if (document.getElementById('match1') && document.getElementById('match1').value === 'wire') correct++;
-      if (document.getElementById('match2') && document.getElementById('match2').value === 'port') correct++;
-      if (document.getElementById('match3') && document.getElementById('match3').value === 'zombie') correct++;
-      const scoreEl = document.getElementById('overall-score');
-      if (scoreEl) scoreEl.textContent = 'Score: ' + correct + '/3 ✓';
-    }
-    
-
     // === UNIT 5 INTERACTIVE FUNCTIONS ===
     
     // Incident Response Order
@@ -3392,12 +3345,15 @@
       if (choice === correctAnswer) {
         btn.style.transform = 'scale(1.1)';
         btn.style.boxShadow = '0 0 20px #39FF14';
+        btn.innerHTML = '✓ ' + btn.innerHTML;
       } else {
         btn.style.opacity = '0.4';
+        btn.innerHTML = '✗ ' + btn.innerHTML;
         buttons.forEach(b => {
           if (b.textContent.toLowerCase().includes(correctAnswer === 'green' ? 'safe' : correctAnswer === 'amber' ? 'risky' : 'unsafe')) {
             b.style.transform = 'scale(1.1)';
             b.style.boxShadow = '0 0 20px #39FF14';
+            b.innerHTML = '✓ ' + b.innerHTML;
           }
         });
       }
@@ -3502,40 +3458,17 @@
     }
     
     // Fact or Fiction
-    function factFiction(btn, choice, ffId) {
-      const container = document.getElementById(ffId);
-      const buttons = container.querySelectorAll('button');
-      const onclick = btn.getAttribute('onclick');
-      const isFact = onclick.includes("'fact'");
-      
-      // Find what answer should be based on data-answer or by checking buttons
-      const allBtns = container.querySelectorAll('button');
-      let correctText;
-      
+    function factFiction(btn, correct, ffId) {
+      const buttons = document.querySelectorAll('#' + ffId + ' button');
       buttons.forEach(b => b.disabled = true);
-      
-      // Determine if this button is correct
-      const isCorrect = (choice === 'fact' && btn.style.background.includes('green') || btn.style.background.includes('39FF14')) ||
-                        (choice === 'fiction' && btn.style.background.includes('red') || btn.style.background.includes('FF6444'));
-      
-      if (choice === 'fact' && btn.textContent.includes('FACT')) {
-        // Check using the onclick parameter and button text
-        if (btn.getAttribute('onclick').includes("'fact'")) {
-          btn.style.boxShadow = '0 0 20px #39FF14';
-          btn.style.transform = 'scale(1.05)';
-        }
-      } else if (choice === 'fiction' && btn.textContent.includes('FICTION')) {
-        if (btn.getAttribute('onclick').includes("'fiction'")) {
-          btn.style.boxShadow = '0 0 20px #39FF14';
-          btn.style.transform = 'scale(1.05)';
-        }
+
+      if (correct) {
+        btn.style.boxShadow = '0 0 20px #39FF14';
+        btn.style.transform = 'scale(1.05)';
       } else {
         btn.style.opacity = '0.4';
-        // Highlight the correct one
-        allBtns.forEach(b => {
-          const bClick = b.getAttribute('onclick');
-          if ((choice === 'fact' && bClick.includes("'fiction'") && b.textContent.includes('FACT')) ||
-              (choice === 'fiction' && bClick.includes("'fact'") && b.textContent.includes('FICTION'))) {
+        buttons.forEach(b => {
+          if (b.getAttribute('onclick').includes('true')) {
             b.style.boxShadow = '0 0 20px #39FF14';
             b.style.transform = 'scale(1.05)';
           }
@@ -3633,6 +3566,50 @@
       personalityScores = {leader: 0, challenger: 0, shaper: 0, implementer: 0, supporter: 0};
       personalityAnswered = 0;
       document.getElementById('personality-result').style.display = 'none';
+    }
+
+    // === ACCESSIBILITY: add a text icon alongside colour-only correct/incorrect feedback ===
+    // Covers every activity that calls fn(this, true/false, 'groupId') without needing to
+    // touch each activity's own code individually.
+    document.addEventListener('click', function(e) {
+      const btn = e.target.closest('button[onclick]');
+      if (!btn) return;
+      const oc = btn.getAttribute('onclick') || '';
+      const m = oc.match(/\(this,\s*(true|false),\s*'([^']+)'\)/);
+      if (!m) return;
+      const clickedCorrect = m[1] === 'true';
+      const groupId = m[2];
+      setTimeout(() => {
+        const group = document.getElementById(groupId);
+        if (!group) return;
+        group.querySelectorAll('button').forEach(b => {
+          const label = b.textContent.trim();
+          if (label.startsWith('✓') || label.startsWith('✗')) return;
+          const bOc = b.getAttribute('onclick') || '';
+          if (b.disabled && /\(this,\s*true,/.test(bOc)) {
+            b.innerHTML = '✓ ' + b.innerHTML;
+          } else if (b === btn && !clickedCorrect) {
+            b.innerHTML = '✗ ' + b.innerHTML;
+          }
+        });
+      }, 0);
+    });
+
+    // === PERSISTENCE: save worksheet text answers to localStorage so they survive a reload ===
+    (function() {
+      const STORAGE_PREFIX = 'cybersec_answer_';
+      document.querySelectorAll('.answer-input, .task-card input[type="text"]').forEach((el, i) => {
+        if (!el.id) el.id = 'auto_field_' + i;
+        const key = STORAGE_PREFIX + el.id;
+        const saved = localStorage.getItem(key);
+        if (saved !== null) el.value = saved;
+        el.addEventListener('input', () => localStorage.setItem(key, el.value));
+      });
+    })();
+
+    // === MOBILE NAV: hamburger toggle for the sidebar on small screens ===
+    function toggleSidebar() {
+      document.querySelector('.sidebar').classList.toggle('sidebar-open');
     }
   </script>
 </div>
