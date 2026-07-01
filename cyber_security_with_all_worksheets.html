@@ -624,8 +624,9 @@
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-title">🛡️ CyberSecure</div>
+      <button onclick="exportAnswers()" style="margin-top: 12px; width: 100%; background: rgba(0,217,255,0.15); border: 1px solid #00D9FF; color: #00D9FF; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;">⬇️ Export My Answers</button>
     </div>
-    
+
     <div class="sidebar-nav">
       <div class="nav-section">
         <div class="nav-section-title">Navigation</div>
@@ -3610,6 +3611,47 @@
     // === MOBILE NAV: hamburger toggle for the sidebar on small screens ===
     function toggleSidebar() {
       document.querySelector('.sidebar').classList.toggle('sidebar-open');
+    }
+
+    // === EXPORT: download every written answer as a text file for handing in ===
+    function exportAnswers() {
+      const lines = ['NCFE Level 2 Cyber Security - My Answers', 'Exported: ' + new Date().toLocaleString(), '='.repeat(50), ''];
+      let unitTitle = '';
+      document.querySelectorAll('.page-section').forEach(section => {
+        const titleEl = section.querySelector('.unit-title');
+        const blocks = section.querySelectorAll('.question, .task-card');
+        let sectionHasAnswers = false;
+        const sectionLines = [];
+        blocks.forEach(block => {
+          const label = block.querySelector('.question-text, .task-label');
+          const inputs = block.querySelectorAll('textarea, input[type="text"]');
+          if (!label || inputs.length === 0) return;
+          const answers = [];
+          inputs.forEach(inp => { if (inp.value.trim()) answers.push(inp.value.trim()); });
+          if (answers.length === 0) return;
+          sectionHasAnswers = true;
+          sectionLines.push('Q: ' + label.textContent.trim());
+          answers.forEach(a => sectionLines.push('A: ' + a));
+          sectionLines.push('');
+        });
+        if (sectionHasAnswers && titleEl) {
+          lines.push('## ' + titleEl.textContent.trim(), '');
+          lines.push(...sectionLines);
+        }
+      });
+      if (lines.length <= 4) {
+        alert('No answers found yet - fill in some worksheets first!');
+        return;
+      }
+      const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'my-cybersecurity-answers.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
   </script>
 </div>
