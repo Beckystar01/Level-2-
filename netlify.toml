@@ -1,0 +1,12 @@
+# Static site: the whole platform is one self-contained HTML file at the repo root.
+# No build step or dependencies. Serve that file as the site's landing page so
+# learners can open the site root directly.
+[build]
+  publish = "."
+
+# Rewrite the root URL to the learning platform (status 200 = serve in place,
+# so the address bar stays at "/").
+[[redirects]]
+  from = "/"
+  to = "/cyber_security_with_all_worksheets.html"
+  status = 200
