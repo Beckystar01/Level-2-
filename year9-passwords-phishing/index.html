@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passwords and Phishing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: clear, upbeat classroom worksheet; short sentences for Year 9.
+IDEA: a security lab bench: a live crack-time meter, then an inbox to inspect.
+PICTURE: the password tester with a large crack-time readout fills the first screen.
+COLOUR and TYPE: white, black ink, concrete planes, safety yellow for the key result; Hanken Grotesk.
+LAYOUT: sticky score bar, section links with minutes, one task per band, stacked on phones.
+*/
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#1a1a19);--ink:light-dark(#111110,#f1f1ee);--mute:light-dark(#55554f,#b3b3ad);--plane:light-dark(#d8d8d4,#2b2b29);--plane2:light-dark(#efefec,#232321);--line:light-dark(#bdbdb7,#3d3d3a);--y:#ffe600;--good:light-dark(#0f6b3a,#6fd69b);--bad:light-dark(#b3261e,#ff8a80)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Hanken Grotesk",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:1100px;margin:0 auto}
+pre,.scroll{overflow-x:auto}.scroll a{flex:none}code{overflow-wrap:anywhere}html{scroll-padding-top:72px}
+h1{font-size:clamp(32px,5vw,48px);line-height:1.05;margin:0 0 10px;font-weight:800;text-wrap:balance}
+h2{font-size:clamp(24px,3vw,30px);line-height:1.1;margin:0 0 6px;font-weight:800;text-wrap:balance}
+h3{font-size:18px;margin:0 0 6px}
+p{margin:0 0 12px;max-width:68ch}
+.mute{color:var(--mute)}
+.top{position:sticky;top:0;z-index:5;background:var(--ink);color:var(--bg);display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px max(5vw,16px);flex-wrap:wrap}
+.top b{font-size:17px}.score{background:var(--y);color:#111;font-weight:800;padding:6px 14px;border-radius:999px;white-space:nowrap}
+.nav{display:flex;gap:8px;padding:12px max(5vw,16px);background:var(--plane2);border-bottom:1px solid var(--line)}
+.nav a{color:var(--ink);text-decoration:none;border:1px solid var(--line);background:var(--bg);padding:8px 12px;border-radius:999px;font-size:14px;white-space:nowrap}
+.nav a span{color:var(--mute)}
+.tag{display:inline-block;background:var(--y);color:#111;font-weight:700;font-size:14px;padding:2px 10px;border-radius:6px;margin-bottom:10px}
+.hero{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(20px,4vw,48px);align-items:start}
+.lab{background:var(--plane);border-radius:18px;padding:clamp(18px,3vw,30px)}
+label{font-weight:700;display:block;margin-bottom:6px}
+input[type=text],input[type=password]{width:100%;font:inherit;font-size:18px;padding:12px 14px;border-radius:10px;border:2px solid var(--ink);background:var(--bg);color:var(--ink);min-height:48px}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{font:inherit;font-weight:700;min-height:44px;padding:8px 16px;border-radius:10px;border:2px solid var(--ink);background:var(--bg);color:var(--ink);cursor:pointer}
+button.pri{background:var(--ink);color:var(--bg)}
+button:disabled{opacity:.55;cursor:default}
+.big{font-size:clamp(30px,5vw,46px);font-weight:800;line-height:1.05;margin:18px 0 4px;text-wrap:balance}
+.meter{height:18px;background:var(--bg);border-radius:9px;overflow:hidden;border:2px solid var(--ink);margin:12px 0}
+.meter i{display:block;height:100%;width:0;background:var(--bad);transition:width .35s,background .35s}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.facts div{background:var(--bg);border-radius:10px;padding:10px 12px}
+.facts small{display:block;color:var(--mute);font-size:13px}
+.facts strong{font-size:17px}
+.warn{background:var(--y);color:#111;border-radius:10px;padding:10px 14px;font-size:15px;margin:12px 0 0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px}
+.card{border:2px solid var(--line);border-radius:14px;padding:16px;background:var(--bg)}
+.card.ok{border-color:var(--good)}.card.no{border-color:var(--bad)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.pair button{font-family:ui-monospace,Menlo,monospace;font-weight:600;font-size:15px;overflow-wrap:anywhere;text-align:center}
+.pair button.right{background:var(--good);color:var(--bg);border-color:var(--good)}
+.pair button.wrong{background:var(--bad);color:var(--bg);border-color:var(--bad)}
+.fb{margin-top:10px;font-size:15px}
+.fb b.g{color:var(--good)}.fb b.r{color:var(--bad)}
+.alt{background:var(--plane2)}
+.mail{border:2px solid var(--line);border-radius:14px;background:var(--bg);overflow:hidden}
+.mail .hd{background:var(--plane);padding:12px 16px;font-size:14px}
+.mail .hd div{overflow-wrap:anywhere}
+.mail .subj{font-size:17px;font-weight:800;margin-top:4px}
+.mail .bd{padding:14px 16px;font-size:15px}
+.fake{color:#1a57c9;text-decoration:underline;overflow-wrap:anywhere}
+:root[data-theme=dark] .fake{color:#8ab4ff}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .fake{color:#8ab4ff}}
+.mail .act{padding:0 16px 16px}
+.flags{margin:8px 0 0;padding-left:20px}
+.checks{list-style:none;padding:0;margin:12px 0}
+.checks li{padding:6px 0 6px 30px;position:relative}
+.checks li::before{content:"";position:absolute;left:0;top:8px;width:18px;height:18px;border-radius:5px;border:2px solid var(--ink)}
+.checks li.on::before{background:var(--good);border-color:var(--good)}
+.q{margin-bottom:18px}
+.opts{display:grid;gap:8px;margin-top:8px}
+.opts button{text-align:left;font-weight:500}
+.opts button.right{background:var(--good);color:var(--bg);border-color:var(--good)}
+.opts button.wrong{background:var(--bad);color:var(--bg);border-color:var(--bad)}
+.result{background:var(--ink);color:var(--bg);border-radius:18px;padding:clamp(18px,3vw,30px)}
+.result .big{color:var(--y);margin-top:0}
+details{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:20px}
+summary{font-weight:700;cursor:pointer;min-height:28px}
+table{border-collapse:collapse;width:100%;font-size:15px}td,th{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+@media(max-width:760px){.hero{grid-template-columns:1fr}}
+@media(max-width:480px){.pair{grid-template-columns:1fr}.facts{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.meter i{transition:none}}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal}.stack td:empty{display:none}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head><body>
+
+<div class="top"><b>Year 9 Cyber Security · Passwords and phishing</b><span class="score" id="score">Score 0 / 15</span></div>
+<nav class="nav scroll" aria-label="Sections">
+  <a href="#start">Start <span>3 min</span></a>
+  <a href="#tester">1 Tester <span>4 min</span></a>
+  <a href="#compare">2 Stronger? <span>5 min</span></a>
+  <a href="#inbox">3 Inbox <span>10 min</span></a>
+  <a href="#passphrase">4 Passphrase <span>4 min</span></a>
+  <a href="#exit">5 Exit quiz <span>4 min</span></a>
+</nav>
+
+<section class="band" id="start">
+  <div class="wrap hero" id="tester">
+    <div>
+      <span class="tag">Start · 3 minutes</span>
+      <h1>How long would a hacker need to crack your password?</h1>
+      <p>Criminals don't sit and guess passwords by hand. They use software that tries <b>billions of guesses every second</b>. There are two main ways it works:</p>
+      <p><b>Brute-force attack:</b> try every possible combination: a, b, c … aa, ab … until one works. Longer passwords with more types of character take far longer.</p>
+      <p><b>Dictionary attack:</b> try a list of common passwords and words first, like <code>password</code>, <code>football</code> or <code>qwerty</code>, plus tricks like adding <code>123</code> or swapping <code>a</code> for <code>@</code>. These fall in under a second.</p>
+      <p><b>Phishing</b> is different: instead of cracking your password, the criminal tricks you into <i>giving</i> it to them, usually with a fake email or text.</p>
+    </div>
+    <div class="lab">
+      <span class="tag">Task 1 · 4 minutes</span>
+      <label for="pw">Type a made-up password to test</label>
+      <div class="row" style="flex-wrap:nowrap">
+        <input type="password" id="pw" autocomplete="off" spellcheck="false" placeholder="e.g. Football123">
+        <button id="show" type="button" aria-pressed="false">Show</button>
+      </div>
+      <div class="big" id="time">Start typing…</div>
+      <div class="mute" id="method">Estimated time for a computer making 10 billion guesses a second.</div>
+      <div class="meter" aria-hidden="true"><i id="bar"></i></div>
+      <div class="facts">
+        <div><small>Length</small><strong id="fLen">0 characters</strong></div>
+        <div><small>Character types</small><strong id="fTypes">none</strong></div>
+        <div><small>Possible combinations</small><strong id="fComb">–</strong></div>
+        <div><small>Attack that works best</small><strong id="fAtk">–</strong></div>
+      </div>
+      <p class="warn"><b>Never type a password you really use</b>, here or on any "password checker" website.</p>
+      <p style="margin-top:14px"><b>Try these and note what changes:</b> <code>monkey</code> → <code>Monkey</code> → <code>Monk3y!</code> → <code>monkey-violin-sandwich</code>. Which change made the biggest difference?</p>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="compare">
+  <div class="wrap">
+    <span class="tag">Task 2 · 5 minutes</span>
+    <h2>Which password would survive longer?</h2>
+    <p>For each pair, click the password you think would take a cracker <b>longer</b> to break. You get 1 point per correct answer.</p>
+    <div class="cards" id="pairs"></div>
+  </div>
+</section>
+
+<section class="band" id="inbox">
+  <div class="wrap">
+    <span class="tag">Task 3 · 10 minutes</span>
+    <h2>Spot the phish</h2>
+    <p>These messages arrived in a student's inbox. Read each one carefully and decide: <b>phishing</b> or <b>safe</b>? Look at who sent it, where any link really goes, and what it asks you to do. All companies here are made up.</p>
+    <div class="cards" id="mails"></div>
+  </div>
+</section>
+
+<section class="band alt" id="passphrase">
+  <div class="wrap hero">
+    <div>
+      <span class="tag">Task 4 · 4 minutes</span>
+      <h2>Build a strong passphrase</h2>
+      <p>The UK's National Cyber Security Centre recommends using <b>three random words</b>. They're long, so brute force takes ages, and they're easier to remember than <code>xT9#q!2L</code>.</p>
+      <p>Make up a passphrase that ticks every box. Pick words that don't go together, not a phrase from a song or film. Use the word button if you're stuck.</p>
+      <p class="mute">Remember: this is practice. Don't use this passphrase anywhere real.</p>
+    </div>
+    <div class="lab">
+      <label for="pp">Your practice passphrase</label>
+      <input type="text" id="pp" autocomplete="off" spellcheck="false" placeholder="e.g. kettle-planet-yoghurt">
+      <div class="row" style="margin-top:10px"><button type="button" id="rand">Give me 3 random words</button></div>
+      <ul class="checks" id="ppChecks"></ul>
+      <div class="big" id="ppTime" style="font-size:28px">–</div>
+      <div class="fb" id="ppFb"></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="exit">
+  <div class="wrap">
+    <span class="tag">Task 5 · 4 minutes</span>
+    <h2>Exit quiz</h2>
+    <p>Answer on your own. You only get one try at each question.</p>
+    <div id="quiz"></div>
+    <div class="result" id="result">
+      <div class="big" id="rScore">0 / 15</div>
+      <p id="rMsg">Complete all five tasks, then show this screen to your teacher.</p>
+      <p style="margin:0" id="rDone"></p>
+    </div>
+    <details>
+      <summary>Teacher notes and answers</summary>
+      <p style="margin-top:10px"><b>Objectives:</b> explain brute-force and dictionary attacks; explain why length and randomness make passwords stronger; identify the warning signs of a phishing message; describe what to do with a suspicious message.</p>
+      <table class="stack">
+        <thead><tr><th>Section</th><th>Time</th><th>Answers / points to draw out</th></tr></thead>
+        <tbody>
+          <tr><td>Start</td><td>3 min</td><td>Brute force vs dictionary attack; phishing tricks the person, not the computer.</td></tr>
+          <tr><td>1 Tester</td><td>4 min</td><td>Length makes the biggest difference. Swapping letters for symbols (Monk3y!) barely helps because crackers try those swaps. Estimates assume an offline attack at 10 billion guesses/second.</td></tr>
+          <tr><td>2 Stronger?</td><td>5 min</td><td>The longer, random-word option wins every pair; the others contain a common word or pattern.</td></tr>
+          <tr><td>3 Inbox</td><td>10 min</td><td>Phishing: Kestrel Bank, PixelPlay gems, ParcelDash text, "IT Support". Safe: Mrs Patel's homework email, PixelPlay sign-in alert.</td></tr>
+          <tr><td>4 Passphrase</td><td>4 min</td><td>Three random words; extend: why use a different password for each account?</td></tr>
+          <tr><td>5 Exit quiz</td><td>4 min</td><td>B, C, A, B (order as shown).</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </div>
+</section>
+
+<script>
+{
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const COMMON=['password','passw','123456','1234567','12345678','123456789','qwerty','qwertyuiop','abc','abcdef','abcdefg','abcdefgh','letmein','football','monkey','dragon','iloveyou','admin','welcome','sunshine','princess','liverpool','arsenal','chelsea','manutd','summer','winter','shadow','master','hello','freedom','whatever','trustno','login','starwars','pokemon','minecraft','fortnite','roblox','soccer','baseball','superman','batman','cheese','computer','secret','london','charlie','jordan','michael','daniel','jessica','ashley','school','iloveu','lovely','flower','qazwsx','asdfgh','zxcvbn','aaaaaa','111111','000000','654321'];
+const RATE=1e10;
+function analyse(pw){
+  let n=0,types=[];
+  if(/[a-z]/.test(pw)){n+=26;types.push('lowercase')}
+  if(/[A-Z]/.test(pw)){n+=26;types.push('capitals')}
+  if(/[0-9]/.test(pw)){n+=10;types.push('numbers')}
+  if(/[^a-zA-Z0-9]/.test(pw)){n+=33;types.push('symbols')}
+  const core=pw.replace(/[^a-zA-Z@$|]+$/,'').toLowerCase().replace(/[@4]/g,'a').replace(/0/g,'o').replace(/[1!|]/g,'i').replace(/3/g,'e').replace(/\$|5/g,'s').replace(/7/g,'t');
+  const plain=pw.toLowerCase();
+  const dict=pw.length>0&&(COMMON.includes(core)||COMMON.includes(plain)||COMMON.includes(core.replace(/i$/,''))||/^(.)\1+$/.test(pw)||/^\d+$/.test(pw)&&pw.length<10);
+  const logC=pw.length?pw.length*Math.log10(n):0;
+  const logT=dict?-1:logC-Math.log10(2)-Math.log10(RATE);
+  return {n,types,dict,logC,logT,len:pw.length};
+}
+function fmt(logT){
+  if(logT<0)return 'Less than a second';
+  const s=10**Math.min(logT,300);
+  const u=[[31557600,'year'],[86400,'day'],[3600,'hour'],[60,'minute'],[1,'second']];
+  if(s>=31557600*1e9)return 'Billions of years';
+  if(s>=31557600*1e6)return 'Millions of years';
+  if(s>=31557600*1e3)return 'Thousands of years';
+  for(const [d,name] of u){if(s>=d){const v=Math.round(s/d);return v+' '+name+(v===1?'':'s')}}
+  return 'Less than a second';
+}
+const colour=l=>l<5?'var(--bad)':l<9.5?'#e0a100':'var(--good)';
+
+/* Task 1 */
+const pw=$('pw');
+function upd(){
+  const v=pw.value,a=analyse(v);
+  if(!v){$('time').textContent='Start typing…';$('bar').style.width='0';$('fLen').textContent='0 characters';$('fTypes').textContent='none';$('fComb').textContent='–';$('fAtk').textContent='–';return}
+  $('time').textContent=fmt(a.logT);
+  const pct=Math.max(4,Math.min(100,(a.logT+1)/13*100));
+  $('bar').style.width=pct+'%';$('bar').style.background=colour(a.logT);
+  $('fLen').textContent=a.len+' character'+(a.len===1?'':'s');
+  $('fTypes').textContent=a.types.join(', ');
+  $('fComb').textContent=a.logC<6?Math.round(10**a.logC).toLocaleString():'about 10^'+Math.floor(a.logC);
+  $('fAtk').textContent=a.dict?'Dictionary attack':'Brute force';
+}
+pw.addEventListener('input',upd);
+$('show').addEventListener('click',e=>{const on=pw.type==='password';pw.type=on?'text':'password';e.currentTarget.textContent=on?'Hide':'Show';e.currentTarget.setAttribute('aria-pressed',on)});
+
+/* Scoring */
+const done={};
+function award(key,ok){if(key in done)return;done[key]=ok?1:0;render()}
+function render(){
+  const s=Object.values(done).reduce((a,b)=>a+b,0),c=Object.keys(done).length;
+  $('score').textContent='Score '+s+' / 15';
+  $('rScore').textContent=s+' / 15';
+  $('rDone').textContent=c+' of 15 questions answered.';
+  $('rMsg').textContent=c<15?'Complete all five tasks, then show this screen to your teacher.':s>=13?'Excellent work: you would be very hard to hack. Show this screen to your teacher.':s>=9?'Good work. Check the feedback on any you missed, then show your teacher.':'Look back at the feedback on the ones you missed, then show your teacher.';
+}
+
+/* Task 2 */
+const PAIRS=[['Summer2024!','purple otter jumps quietly'],['tangerine-ladder-cloud','Liverpool2010'],['P@ssw0rd!','goat-piano-river'],['aB3$xY9!','abcdefgh']];
+$('pairs').innerHTML=PAIRS.map((p,i)=>`<div class="card" id="pc${i}"><h3>Pair ${i+1}</h3><div class="pair">${p.map((x,j)=>`<button type="button" data-pair="${i}" data-j="${j}">${esc(x)}</button>`).join('')}</div><div class="fb" id="pf${i}"></div></div>`).join('');
+$('pairs').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-pair]');if(!b)return;
+  const i=+b.dataset.pair;if(('p'+i) in done)return;
+  const p=PAIRS[i],A=p.map(analyse),best=A[0].logT>A[1].logT?0:1,ok=+b.dataset.j===best;
+  const btns=b.parentNode.querySelectorAll('button');
+  btns[best].classList.add('right');if(!ok)b.classList.add('wrong');
+  btns.forEach(x=>x.disabled=true);
+  const w=1-best;
+  $('pc'+i).classList.add(ok?'ok':'no');
+  $('pf'+i).innerHTML=`<b class="${ok?'g':'r'}">${ok?'Correct!':'Not quite.'}</b> <code>${esc(p[best])}</code>: ${fmt(A[best].logT).toLowerCase()}. <code>${esc(p[w])}</code>: ${fmt(A[w].logT).toLowerCase()}${A[w].dict?', because it is built from a common word or pattern that a dictionary attack tries early':''}.`;
+  award('p'+i,ok);
+});
+
+/* Task 3 */
+const MAILS=[
+ {from:'Kestrel Bank Security &lt;security@kestrel-bank-secure.co&gt;',subj:'URGENT: Your account has been locked',body:'Dear Customer,<br><br>We detected unusual activity and your account is now <b>locked</b>. You must verify your details within 24 hours or your account will be closed permanently.<br><br><span class="fake">https://kestrel-bank-secure.co/verify-login</span><br><br>Kestrel Bank',phish:true,why:['"Dear Customer": a real bank would use your name.','Urgency and threats ("within 24 hours", "closed permanently") to rush you.','The web address is a lookalike, not the bank\'s real site.','Asks you to log in through a link. Go to the app or type the address yourself instead.']},
+ {from:'Mrs S. Patel &lt;s.patel@northgate.sch.uk&gt;',subj:'Science homework: due Friday',body:'Hi 9B,<br><br>Just a reminder that your forces worksheet is due this Friday. It\'s on the class page if you\'ve lost your copy. Bring any questions to Thursday\'s lesson.<br><br>Mrs Patel',phish:false,why:['Comes from the school\'s normal email domain.','Uses your class name and mentions things you\'d expect.','No links, no attachments, no request for passwords or money.']},
+ {from:'PixelPlay Rewards &lt;prizes@pixelplay-free-gems.net&gt;',subj:'🎉 You\'ve WON 10,000 free gems!',body:'Congratulations! You were randomly selected to win 10,000 gems. To claim your prize, reply with your <b>PixelPlay username and password</b> so we can add them to your account.<br><br>Offer ends tonight!',phish:true,why:['Too good to be true: you didn\'t enter a competition.','No real company ever asks for your password.','Sender domain isn\'t the game\'s real one.','Time pressure: "Offer ends tonight!"']},
+ {from:'Text message from +44 7700 900183',subj:'ParcelDash: delivery failed',body:'ParcelDash: We could not deliver your parcel today. Pay the £1.45 redelivery fee here to rebook: <span class="fake">parceldash.delivery-fee.info/pay</span>',phish:true,why:['Text-message phishing is called "smishing".','Sent from a random mobile number.','Asks for a small payment so you don\'t think twice; they really want your card details.','The link\'s real domain is "delivery-fee.info", not the courier.']},
+ {from:'PixelPlay &lt;no-reply@pixelplay.com&gt;',subj:'New sign-in to your account',body:'We noticed a new sign-in to your account from a Windows PC.<br><br>If this was you, you don\'t need to do anything. If it wasn\'t you, open the PixelPlay app and change your password in Settings.',phish:false,why:['Doesn\'t ask you to click a link or reply with anything.','Tells you to go to the app yourself, which is exactly what you should do.','From the company\'s normal domain. If unsure, you could still check in the app.']},
+ {from:'IT Support &lt;it-support@northgate-sch.co&gt;',subj:'Your school email password expires TODAY',body:'Your school password will expire at 5pm today. To keep access to your email and homework, reply to this message with your <b>current password</b> and we will renew it.<br><br>School IT Team',phish:true,why:['Look closely: "northgate-sch.co", not "northgate.sch.uk".','IT staff will never ask you for your password.','Urgency: "expires TODAY".','What to do: don\'t reply, and report it to a teacher or the IT team.']}
+];
+$('mails').innerHTML=MAILS.map((m,i)=>`<div class="mail" id="mc${i}"><div class="hd"><div><b>From:</b> ${m.from}</div><div class="subj">${m.subj}</div></div><div class="bd">${m.body}</div><div class="act"><div class="row"><button type="button" data-mail="${i}" data-v="1">Phishing</button><button type="button" data-mail="${i}" data-v="0">Safe</button></div><div class="fb" id="mf${i}"></div></div></div>`).join('');
+$('mails').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-mail]');if(!b)return;
+  const i=+b.dataset.mail,m=MAILS[i];if(('m'+i) in done)return;
+  const ok=(b.dataset.v==='1')===m.phish;
+  b.parentNode.querySelectorAll('button').forEach(x=>x.disabled=true);
+  b.classList.add('pri');
+  $('mc'+i).style.borderColor=ok?'var(--good)':'var(--bad)';
+  $('mf'+i).innerHTML=`<b class="${ok?'g':'r'}">${ok?'Correct!':'Not quite.'}</b> This one is <b>${m.phish?'phishing':'safe'}</b>.<ul class="flags">${m.why.map(w=>'<li>'+esc(w)+'</li>').join('')}</ul>`;
+  award('m'+i,ok);
+});
+
+/* Task 4 */
+const WORDS=['kettle','planet','yoghurt','giraffe','lantern','pickle','canyon','trumpet','velvet','walrus','biscuit','meteor','saddle','harbour','pebble','cactus','rocket','muffin','glacier','badger','violin','tornado','spatula','island','compass','marble','penguin','orchard','blanket','turnip','ladder','comet'];
+const pp=$('pp');
+function ppUpd(){
+  const v=pp.value.trim(),a=analyse(v),words=v.split(/[\s\-_.,+]+/).filter(w=>/[a-z]{3,}/i.test(w));
+  const checks=[['At least three words',words.length>=3],['At least 15 characters long',v.length>=15],['Not a common password or word',v.length>0&&!a.dict],['Would take over 100 years to brute-force',a.logT>Math.log10(31557600*100)]];
+  $('ppChecks').innerHTML=checks.map(c=>`<li class="${c[1]?'on':''}">${c[0]}</li>`).join('');
+  $('ppTime').textContent=v?fmt(a.logT):'–';
+  const all=checks.every(c=>c[1]);
+  if(all&&!('pp' in done)){award('pp',true)}
+  $('ppFb').innerHTML=('pp' in done)?'<b class="g">Task complete: 1 point.</b> Now, how will you remember it without writing it on a sticky note?':'';
+}
+pp.addEventListener('input',ppUpd);
+$('rand').addEventListener('click',()=>{const w=[];while(w.length<3){const x=WORDS[Math.floor(Math.random()*WORDS.length)];if(!w.includes(x))w.push(x)}pp.value=w.join('-');ppUpd();pp.focus()});
+ppUpd();
+
+/* Task 5 */
+const QUIZ=[
+ {q:'What is a brute-force attack?',o:['Tricking someone into giving away their password','Trying every possible combination until one works','Guessing a password from someone\'s social media'],a:1},
+ {q:'Which of these makes a password hardest to crack?',o:['Swapping letters for symbols, e.g. P@ssw0rd','Adding your birth year to the end','Making it longer, e.g. three random words'],a:2},
+ {q:'An email says it\'s from your bank and asks you to log in using its link. What should you do?',o:['Ignore the link and open the bank\'s app or type its address yourself','Click the link but check the page looks real','Reply asking if it\'s genuine'],a:0},
+ {q:'Why should you use a different password for each account?',o:['Websites don\'t allow the same password twice','If one site is hacked, criminals try that password on your other accounts','It makes passwords easier to remember'],a:1}
+];
+$('quiz').innerHTML=QUIZ.map((x,i)=>`<div class="q"><h3>${i+1}. ${esc(x.q)}</h3><div class="opts">${x.o.map((o,j)=>`<button type="button" data-q="${i}" data-j="${j}">${String.fromCharCode(65+j)}. ${esc(o)}</button>`).join('')}</div><div class="fb" id="qf${i}"></div></div>`).join('');
+$('quiz').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-q]');if(!b)return;
+  const i=+b.dataset.q;if(('q'+i) in done)return;
+  const ok=+b.dataset.j===QUIZ[i].a,btns=b.parentNode.querySelectorAll('button');
+  btns[QUIZ[i].a].classList.add('right');if(!ok)b.classList.add('wrong');
+  btns.forEach(x=>x.disabled=true);
+  $('qf'+i).innerHTML=`<b class="${ok?'g':'r'}">${ok?'Correct!':'Not quite.'}</b>`;
+  award('q'+i,ok);
+});
+render();
+}
+</script>
+</body>
+</html>

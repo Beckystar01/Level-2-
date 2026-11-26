@@ -14,6 +14,9 @@ activity type.
 - `ANSWER_KEY.md` — the answer key for the auto-graded multiple-choice
   questions in Units 4, 5 and 6's practice/mock exams, with confidence
   notes for a tutor to double-check before relying on it for assessment.
+- `year9-passwords-phishing/index.html` — a 30-minute Year 9 activity on
+  password cracking and phishing, published at
+  `https://beckystar01.github.io/Level-2-/year9-passwords-phishing/`.
 - `.github/workflows/pages.yml` — GitHub Actions workflow that deploys the
   site to GitHub Pages on every push to `main`.
 
